@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const urlRoutes = require('./api/urls/urls.routes');
 const userRoutes = require('./api/users/users.routes');
+const passport = require('passport');
+const { localStrategy, jwtStrategy } = require('./middleware/passport');
 
 const db = require('./db/models');
 const run = async () => {
@@ -18,6 +20,9 @@ const run = async () => {
 
 run();
 app.use(express.json());
+app.use(passport.initialize());
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 app.use('/urls', urlRoutes);
 app.use(userRoutes);

@@ -9,7 +9,7 @@ exports.shorten = async (req, res) => {
   try {
     req.body.shortUrl = baseUrl + '/' + urlCode;
     req.body.urlCode = urlCode;
-    req.body.userId = req.params.userId;
+    req.body.userId = req.user.id;
     const newUrl = await Url.create(req.body);
     res.json(newUrl);
   } catch (err) {
@@ -34,6 +34,9 @@ exports.deleteUrl = async (req, res) => {
   try {
     const url = await Url.findOne({ urlCode: req.params.code });
     if (url) {
+      if (url.userId != req.user.id) {
+        return res.status(401).json('Unauthorized');
+      }
       await Url.destroy();
       return res.status(201).json('Deleted');
     } else {
